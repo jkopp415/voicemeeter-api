@@ -4,7 +4,7 @@
   "description": "A Node.js wrapper for the Voicemeeter Remote API.",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node ."
   },
   "keywords": [],
   "author": "jkopp415",
