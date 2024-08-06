@@ -18,3 +18,38 @@ const getDllPath = () => {
     });
 
 }
+
+let voicemeeterLib;
+
+const voicemeeter = {
+
+    // General Voicemeeter API settings/values
+    isInitialized: false,
+    isConnected: false,
+    outputDevices: false,
+    inputDevices: false,
+    type: 0,
+    version: null,
+    voicemeeterConfig: null,
+
+    async init() {
+
+        // Get the DLL object using koffi
+        // const dll = koffi.load(await getDllPath().toString());
+        let dll;
+        getDllPath().then((dllPath) => {
+            dll = koffi.load(dllPath.toString());
+        });
+
+        voicemeeterLib = {
+
+            // Grab DLL functions here
+
+        };
+
+        this.isInitialized = true;
+    },
+
+}
+
+module.exports = voicemeeter;
