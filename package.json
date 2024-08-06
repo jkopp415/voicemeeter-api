@@ -9,4 +9,9 @@
   "keywords": [],
   "author": "jkopp415",
   "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jkopp415/voicemeeter-api.git"
+  }
 }
