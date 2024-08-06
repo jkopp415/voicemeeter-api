@@ -10,7 +10,7 @@ const getDllPath = () => {
     });
 
     // TODO: Add some sort of error handling for this promise?
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         regKey.values((error, items) => {
             const uninstallerPath = items.find((item) => item.name === "UninstallString").value;
             resolve(join(dirname(uninstallerPath), "VoicemeeterRemote64.dll"));
@@ -35,20 +35,46 @@ const voicemeeter = {
     async init() {
 
         // Get the DLL object using koffi
-        // const dll = koffi.load(await getDllPath().toString());
-        let dll;
-        getDllPath().then((dllPath) => {
-            dll = koffi.load(dllPath.toString());
-        });
+        const dll = koffi.load(await getDllPath());
 
         voicemeeterLib = {
 
-            // Grab DLL functions here
+            // Login/Logout
+            VBVMR_Login: dll.func("long __stdcall VBVMR_Login(void)"),
+            VBVMR_Logout: dll.func("long __stdcall VBVMR_Logout(void)"),
 
         };
 
         this.isInitialized = true;
     },
+
+    login() {
+
+        if (!this.isInitialized)
+            throw "Wait for initialization before logging in";
+
+        if (this.isConnected)
+            throw "Already connected";
+
+        if (voicemeeterLib.VBVMR_Login() !== 0)
+            throw "Login failed";
+
+        // this.type =
+        // this.version =
+        // this.voicemeeterConfig =
+        this.isConnected = true;
+    },
+
+    logout() {
+
+        if (!this.isConnected)
+            throw "Not connected";
+
+        if (voicemeeterLib.VBVMR_Logout() !== 0)
+            throw "Logout failed";
+
+        this.isConnected = false;
+    }
 
 }
 
