@@ -8,8 +8,11 @@
   },
   "keywords": [],
   "author": "jkopp415",
-  "license": "MIT"
   "license": "MIT",
+  "dependencies": {
+    "koffi": "^2.9.0",
+    "winreg": "^1.2.5"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/jkopp415/voicemeeter-api.git"
