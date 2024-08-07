@@ -3,11 +3,6 @@
   "version": "0.1",
   "description": "A Node.js wrapper for the Voicemeeter Remote API.",
   "main": "index.js",
-  "scripts": {
-    "start": "node .",
-    "test": "node tests/test.js",
-    "express-test": "node tests/express-test.js"
-  },
   "keywords": [],
   "author": "jkopp415",
   "license": "MIT",
