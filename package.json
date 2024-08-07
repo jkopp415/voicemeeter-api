@@ -5,12 +5,14 @@
   "main": "index.js",
   "scripts": {
     "start": "node .",
-    "test": "node ./tests/test.js"
+    "test": "node tests/test.js",
+    "express-test": "node tests/express-test.js"
   },
   "keywords": [],
   "author": "jkopp415",
   "license": "MIT",
   "dependencies": {
+    "express": "^4.19.2",
     "koffi": "^2.9.0",
     "winreg": "^1.2.5"
   },
