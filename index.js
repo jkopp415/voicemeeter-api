@@ -2,6 +2,8 @@ const { dirname, join } = require('path');
 const Registry = require('winreg');
 const koffi = require('koffi');
 
+const { VoicemeeterDefaultConfig, VoicemeeterType } = require('./enums');
+
 const getDllPath = () => {
 
     const regKey = new Registry({
@@ -43,6 +45,17 @@ const voicemeeter = {
             VBVMR_Login: dll.func("long __stdcall VBVMR_Login(void)"),
             VBVMR_Logout: dll.func("long __stdcall VBVMR_Logout(void)"),
 
+            // General information
+            VBVMR_GetVoicemeeterType: dll.func("long __stdcall VBVMR_GetVoicemeeterType(_Out_ long* pType)"),
+            VBVMR_GetVoicemeeterVersion: dll.func("long __stdcall VBVMR_GetVoicemeeterVersion(_Out_ long* pVersion)"),
+
+            // Get parameters
+            VBVMR_IsParametersDirty: dll.func("long __stdcall VBVMR_IsParametersDirty(void)"),
+            VBVMR_GetParameterFloat: dll.func("long __stdcall VBVMR_GetParameterFloat(char* szParamName, _Out_ float* pValue)"),
+
+            // Set parameters
+            VBVMR_SetParameterFloat: dll.func("long __stdcall VBVMR_SetParameterFloat(char* szParamName, float Value)"),
+
         };
 
         this.isInitialized = true;
@@ -59,9 +72,9 @@ const voicemeeter = {
         if (voicemeeterLib.VBVMR_Login() !== 0)
             throw "Login failed";
 
-        // this.type =
-        // this.version =
-        // this.voicemeeterConfig =
+        this.type = this.getVoicemeeterType();
+        this.version = this.getVoicemeeterVersion();
+        this.voicemeeterConfig = VoicemeeterDefaultConfig[this.type];
         this.isConnected = true;
     },
 
@@ -74,6 +87,70 @@ const voicemeeter = {
             throw "Logout failed";
 
         this.isConnected = false;
+    },
+
+    getVoicemeeterType() {
+
+        const voicemeeterType = [0];
+        if (voicemeeterLib.VBVMR_GetVoicemeeterType(voicemeeterType) !== 0)
+            throw "GetVoicemeeterType failed";
+
+        switch(voicemeeterType[0]) {
+            case 1:
+                return VoicemeeterType.voicemeeter;
+            case 2:
+                return VoicemeeterType.voicemeeterBanana;
+            case 3:
+                return VoicemeeterType.voicemeeterPotato;
+            default:
+                return VoicemeeterType.unknown;
+        }
+    },
+
+    getVoicemeeterVersion() {
+
+        const voicemeeterVersion = [0];
+        if (voicemeeterLib.VBVMR_GetVoicemeeterVersion(voicemeeterVersion) !== 0)
+            throw "GetVoicemeeterVersion failed";
+
+        const v1 = (voicemeeterVersion[0] & 0xFF000000) >> 24;
+        const v2 = (voicemeeterVersion[0] & 0x00FF0000) >> 16;
+        const v3 = (voicemeeterVersion[0] & 0x0000FF00) >> 8;
+        const v4 = (voicemeeterVersion[0] & 0x000000FF);
+
+        return `${v1}.${v2}.${v3}.${v4}`;
+    },
+
+    isParametersDirty() {
+
+        return voicemeeterLib.VBVMR_IsParametersDirty();
+    },
+
+    getParameterFloat(parameter) {
+
+        if (!this.isConnected)
+            throw "Not connected";
+
+        if (!this.voicemeeterConfig)
+            throw "Configuration error";
+
+        let value = [0];
+        if (voicemeeterLib.VBVMR_GetParameterFloat(parameter, value) !== 0)
+            throw "GetParameterFloat failed";
+
+        return value[0];
+    },
+
+    setParameterFloat(parameter, value) {
+
+        if (!this.isConnected)
+            throw "Not connected";
+
+        if (!this.voicemeeterConfig)
+            throw "Configuration error";
+
+        if (voicemeeterLib.VBVMR_SetParameterFloat(parameter, value) !== 0)
+            throw "SetParameterFloat failed";
     }
 
 }
