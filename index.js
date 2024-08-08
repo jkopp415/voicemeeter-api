@@ -1,8 +1,8 @@
-const { dirname, join } = require('path');
-const Registry = require('winreg');
-const koffi = require('koffi');
+import { dirname, join } from 'path';
+import Registry from 'winreg';
+import koffi from 'koffi'
 
-const { VoicemeeterDefaultConfig, VoicemeeterType, PanelType } = require('./enums');
+import { VoicemeeterDefaultConfig, VoicemeeterType, PanelType, ButtonState } from './enums.js';
 
 // TODO: Add better error handling for function failures
 
@@ -59,6 +59,7 @@ const voicemeeter = {
             VBVMR_SetParameterFloat: dll.func("long __stdcall VBVMR_SetParameterFloat(char* szParamName, float Value)"),
 
         };
+export const voicemeeter = {
 
         this.isInitialized = true;
     },
@@ -182,5 +183,3 @@ const voicemeeter = {
     }
 
 }
-
-module.exports = voicemeeter;

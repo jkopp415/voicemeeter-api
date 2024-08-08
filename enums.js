@@ -1,4 +1,4 @@
-const VoicemeeterDefaultConfig = {
+export const VoicemeeterDefaultConfig = {
     0: {},
     1: {
         strips: [{
@@ -105,21 +105,19 @@ const VoicemeeterDefaultConfig = {
     }
 }
 
-const VoicemeeterType = {
+export const VoicemeeterType = {
     unknown: 0,
     voicemeeter: 1,
     voicemeeterBanana: 2,
     voicemeeterPotato: 3
 }
 
-const PanelType = {
+export const PanelType = {
     strip: 0,
     bus: 1
 }
 
-const ButtonState = {
+export const ButtonState = {
     OFF: 0,
     ON: 1
 }
-
-module.exports = { VoicemeeterDefaultConfig, VoicemeeterType, PanelType, ButtonState };
