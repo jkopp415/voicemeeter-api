@@ -128,21 +128,6 @@ const voicemeeter = {
         return voicemeeterLib.VBVMR_IsParametersDirty();
     },
 
-    // getParameterFloat(parameter) {
-    //
-    //     if (!this.isConnected)
-    //         throw "Not connected";
-    //
-    //     if (!this.voicemeeterConfig)
-    //         throw "Configuration error";
-    //
-    //     let value = [0];
-    //     if (voicemeeterLib.VBVMR_GetParameterFloat(parameter, value) !== 0)
-    //         throw "GetParameterFloat failed";
-    //
-    //     return value[0];
-    // },
-
     getButtonState(panelType, panelNum, buttonName) {
 
         // Check that Voicemeeter is connected and the right config is selected
