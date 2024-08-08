@@ -2,7 +2,7 @@ import { dirname, join } from 'path';
 import Registry from 'winreg';
 import koffi from 'koffi'
 
-import { VoicemeeterDefaultConfig, VoicemeeterType, PanelType, ButtonState } from './enums.js';
+import { VoicemeeterType } from './enums.js';
 
 // TODO: Add better error handling for function failures
 
@@ -20,82 +20,55 @@ const getDllPath = () => {
             resolve(join(dirname(uninstallerPath), "VoicemeeterRemote64.dll"));
         });
     });
-
 }
 
-let voicemeeterLib;
+let voicemeeterDll;
 
-const voicemeeter = {
+const initializeDllFunctions = async () => {
 
-    // General Voicemeeter API settings/values
-    isInitialized: false,
-    isConnected: false,
-    outputDevices: false,
-    inputDevices: false,
-    type: 0,
-    version: null,
-    voicemeeterConfig: null,
+    // Get the DLL object using koffi
+    const dll = koffi.load(await getDllPath());
+
+    voicemeeterDll = {
+
+        // Login/Logout
+        VBVMR_Login: dll.func("long __stdcall VBVMR_Login(void)"),
+        VBVMR_Logout: dll.func("long __stdcall VBVMR_Logout(void)"),
+
+        // General information
+        VBVMR_GetVoicemeeterType: dll.func("long __stdcall VBVMR_GetVoicemeeterType(_Out_ long* pType)"),
+        VBVMR_GetVoicemeeterVersion: dll.func("long __stdcall VBVMR_GetVoicemeeterVersion(_Out_ long* pVersion)"),
+
+        // Get parameters
+        VBVMR_IsParametersDirty: dll.func("long __stdcall VBVMR_IsParametersDirty(void)"),
+        VBVMR_GetParameterFloat: dll.func("long __stdcall VBVMR_GetParameterFloat(char* szParamName, _Out_ float* pValue)"),
+
+        // Set parameters
+        VBVMR_SetParameterFloat: dll.func("long __stdcall VBVMR_SetParameterFloat(char* szParamName, float Value)"),
+
+    };
+}
+
+export const voicemeeterLib = {
 
     async init() {
-
-        // Get the DLL object using koffi
-        const dll = koffi.load(await getDllPath());
-
-        voicemeeterLib = {
-
-            // Login/Logout
-            VBVMR_Login: dll.func("long __stdcall VBVMR_Login(void)"),
-            VBVMR_Logout: dll.func("long __stdcall VBVMR_Logout(void)"),
-
-            // General information
-            VBVMR_GetVoicemeeterType: dll.func("long __stdcall VBVMR_GetVoicemeeterType(_Out_ long* pType)"),
-            VBVMR_GetVoicemeeterVersion: dll.func("long __stdcall VBVMR_GetVoicemeeterVersion(_Out_ long* pVersion)"),
-
-            // Get parameters
-            VBVMR_IsParametersDirty: dll.func("long __stdcall VBVMR_IsParametersDirty(void)"),
-            VBVMR_GetParameterFloat: dll.func("long __stdcall VBVMR_GetParameterFloat(char* szParamName, _Out_ float* pValue)"),
-
-            // Set parameters
-            VBVMR_SetParameterFloat: dll.func("long __stdcall VBVMR_SetParameterFloat(char* szParamName, float Value)"),
-
-        };
-export const voicemeeter = {
-
-        this.isInitialized = true;
+        await initializeDllFunctions();
     },
 
     login() {
-
-        if (!this.isInitialized)
-            throw "Wait for initialization before logging in";
-
-        if (this.isConnected)
-            throw "Already connected";
-
-        if (voicemeeterLib.VBVMR_Login() !== 0)
+        if (voicemeeterDll.VBVMR_Login() !== 0)
             throw "Login failed";
-
-        this.type = this.getVoicemeeterType();
-        this.version = this.getVoicemeeterVersion();
-        this.voicemeeterConfig = VoicemeeterDefaultConfig[this.type];
-        this.isConnected = true;
     },
 
     logout() {
-
-        if (!this.isConnected)
-            throw "Not connected";
-
-        if (voicemeeterLib.VBVMR_Logout() !== 0)
+        if (voicemeeterDll.VBVMR_Logout() !== 0)
             throw "Logout failed";
-
-        this.isConnected = false;
     },
 
     getVoicemeeterType() {
 
         const voicemeeterType = [0];
-        if (voicemeeterLib.VBVMR_GetVoicemeeterType(voicemeeterType) !== 0)
+        if (voicemeeterDll.VBVMR_GetVoicemeeterType(voicemeeterType) !== 0)
             throw "GetVoicemeeterType failed";
 
         switch(voicemeeterType[0]) {
@@ -113,7 +86,7 @@ export const voicemeeter = {
     getVoicemeeterVersion() {
 
         const voicemeeterVersion = [0];
-        if (voicemeeterLib.VBVMR_GetVoicemeeterVersion(voicemeeterVersion) !== 0)
+        if (voicemeeterDll.VBVMR_GetVoicemeeterVersion(voicemeeterVersion) !== 0)
             throw "GetVoicemeeterVersion failed";
 
         const v1 = (voicemeeterVersion[0] & 0xFF000000) >> 24;
@@ -125,61 +98,38 @@ export const voicemeeter = {
     },
 
     isParametersDirty() {
-
-        return voicemeeterLib.VBVMR_IsParametersDirty();
+        return voicemeeterDll.VBVMR_IsParametersDirty();
     },
 
-    getButtonState(panelType, panelNum, buttonName) {
+    // getParameterFloat(panelType, panelNum, buttonName) {
+    //
+    //     const parameter = `${panelType}[${panelNum}].${buttonName}`;
+    //     let value = [0];
+    //     if (voicemeeterDll.VBVMR_GetParameterFloat(parameter, value) !== 0)
+    //         throw "GetParameterFloat failed";
+    //
+    //     return value[0];
+    // },
+    //
+    // setParameterFloat(panelType, panelNum, buttonName, buttonState) {
+    //
+    //     const parameter = `${panelType}[${panelNum}].${buttonName}`;
+    //     if (voicemeeterDll.VBVMR_SetParameterFloat(parameter, buttonState) !== 0)
+    //         throw "SetParameterFloat failed";
+    // },
 
-        // Check that Voicemeeter is connected and the right config is selected
-        if (!this.isConnected)
-            throw "Not connected";
+    getParameterFloat(parameter) {
 
-        if (!this.voicemeeterConfig)
-            throw "Configuration error";
-
-        // Check that the interface type (strip or bus) is valid and get the corresponding string
-        if (!Object.values(PanelType).includes(panelType))
-            throw `Invalid Interface type: ${panelType}`;
-        const panelTypeStr = panelType === PanelType.strip ? "Strip" : "Bus";
-
-        // Check that the interface number is valid
-        if (!this.voicemeeterConfig[panelType === PanelType.strip ? "strips" : "buses"]
-                .some((strip) => strip.id === parseInt(panelNum)))
-            throw `${panelTypeStr} ${panelNum} not found`;
-
-        // Run the API method and return the result
-        const parameter = `${panelTypeStr}[${panelNum}].${buttonName}`;
         let value = [0];
-        if (voicemeeterLib.VBVMR_GetParameterFloat(parameter, value) !== 0)
+        if (voicemeeterDll.VBVMR_GetParameterFloat(parameter, value) !== 0)
             throw "GetParameterFloat failed";
-
         return value[0];
     },
 
-    setButtonState(panelType, panelNum, buttonName, buttonState) {
+    setParameterFloat(parameter, value) {
 
-        // Check that Voicemeeter is connected and the right config is selected
-        if (!this.isConnected)
-            throw "Not connected";
-
-        if (!this.voicemeeterConfig)
-            throw "Configuration error";
-
-        // Check that the interface type (strip or bus) is valid and get the corresponding string
-        if (!Object.values(PanelType).includes(panelType))
-            throw `Invalid Interface type: ${panelType}`;
-        const panelTypeStr = panelType === PanelType.strip ? "Strip" : "Bus";
-
-        // Check that the interface number is valid
-        if (!this.voicemeeterConfig[panelType === PanelType.strip ? "strips" : "buses"]
-            .some((strip) => strip.id === parseInt(panelNum)))
-            throw `${panelTypeStr} ${panelNum} not found`;
-
-        // Run the API method
-        const parameter = `${panelTypeStr}[${panelNum}].${buttonName}`;
-        if (voicemeeterLib.VBVMR_SetParameterFloat(parameter, buttonState) !== 0)
+        if (voicemeeterDll.VBVMR_SetParameterFloat(parameter, value) !== 0)
             throw "SetParameterFloat failed";
-    }
+    },
 
 }
