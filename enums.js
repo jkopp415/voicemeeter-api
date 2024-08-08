@@ -117,4 +117,9 @@ const PanelType = {
     bus: 1
 }
 
-module.exports = { VoicemeeterDefaultConfig, VoicemeeterType, PanelType };
+const ButtonState = {
+    OFF: 0,
+    ON: 1
+}
+
+module.exports = { VoicemeeterDefaultConfig, VoicemeeterType, PanelType, ButtonState };

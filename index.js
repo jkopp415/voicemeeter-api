@@ -4,6 +4,8 @@ const koffi = require('koffi');
 
 const { VoicemeeterDefaultConfig, VoicemeeterType, PanelType } = require('./enums');
 
+// TODO: Add better error handling for function failures
+
 const getDllPath = () => {
 
     const regKey = new Registry({
@@ -169,15 +171,28 @@ const voicemeeter = {
         return value[0];
     },
 
-    setParameterFloat(parameter, value) {
+    setButtonState(panelType, panelNum, buttonName, buttonState) {
 
+        // Check that Voicemeeter is connected and the right config is selected
         if (!this.isConnected)
             throw "Not connected";
 
         if (!this.voicemeeterConfig)
             throw "Configuration error";
 
-        if (voicemeeterLib.VBVMR_SetParameterFloat(parameter, value) !== 0)
+        // Check that the interface type (strip or bus) is valid and get the corresponding string
+        if (!Object.values(PanelType).includes(panelType))
+            throw `Invalid Interface type: ${panelType}`;
+        const panelTypeStr = panelType === PanelType.strip ? "Strip" : "Bus";
+
+        // Check that the interface number is valid
+        if (!this.voicemeeterConfig[panelType === PanelType.strip ? "strips" : "buses"]
+            .some((strip) => strip.id === parseInt(panelNum)))
+            throw `${panelTypeStr} ${panelNum} not found`;
+
+        // Run the API method
+        const parameter = `${panelTypeStr}[${panelNum}].${buttonName}`;
+        if (voicemeeterLib.VBVMR_SetParameterFloat(parameter, buttonState) !== 0)
             throw "SetParameterFloat failed";
     }
 
