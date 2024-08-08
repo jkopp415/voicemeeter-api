@@ -112,4 +112,9 @@ const VoicemeeterType = {
     voicemeeterPotato: 3
 }
 
-module.exports = { VoicemeeterDefaultConfig, VoicemeeterType };
+const PanelType = {
+    strip: 0,
+    bus: 1
+}
+
+module.exports = { VoicemeeterDefaultConfig, VoicemeeterType, PanelType };
