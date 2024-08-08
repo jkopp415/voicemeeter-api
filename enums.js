@@ -112,11 +112,6 @@ export const VoicemeeterType = {
     voicemeeterPotato: 3
 }
 
-export const PanelType = {
-    strip: 0,
-    bus: 1
-}
-
 export const ButtonState = {
     OFF: 0,
     ON: 1
