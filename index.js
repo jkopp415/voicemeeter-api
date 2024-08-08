@@ -2,7 +2,7 @@ const { dirname, join } = require('path');
 const Registry = require('winreg');
 const koffi = require('koffi');
 
-const { VoicemeeterDefaultConfig, VoicemeeterType } = require('./enums');
+const { VoicemeeterDefaultConfig, VoicemeeterType, PanelType } = require('./enums');
 
 const getDllPath = () => {
 
@@ -126,14 +126,42 @@ const voicemeeter = {
         return voicemeeterLib.VBVMR_IsParametersDirty();
     },
 
-    getParameterFloat(parameter) {
+    // getParameterFloat(parameter) {
+    //
+    //     if (!this.isConnected)
+    //         throw "Not connected";
+    //
+    //     if (!this.voicemeeterConfig)
+    //         throw "Configuration error";
+    //
+    //     let value = [0];
+    //     if (voicemeeterLib.VBVMR_GetParameterFloat(parameter, value) !== 0)
+    //         throw "GetParameterFloat failed";
+    //
+    //     return value[0];
+    // },
 
+    getButtonState(panelType, panelNum, buttonName) {
+
+        // Check that Voicemeeter is connected and the right config is selected
         if (!this.isConnected)
             throw "Not connected";
 
         if (!this.voicemeeterConfig)
             throw "Configuration error";
 
+        // Check that the interface type (strip or bus) is valid and get the corresponding string
+        if (!Object.values(PanelType).includes(panelType))
+            throw `Invalid Interface type: ${panelType}`;
+        const panelTypeStr = panelType === PanelType.strip ? "Strip" : "Bus";
+
+        // Check that the interface number is valid
+        if (!this.voicemeeterConfig[panelType === PanelType.strip ? "strips" : "buses"]
+                .some((strip) => strip.id === parseInt(panelNum)))
+            throw `${panelTypeStr} ${panelNum} not found`;
+
+        // Run the API method and return the result
+        const parameter = `${panelTypeStr}[${panelNum}].${buttonName}`;
         let value = [0];
         if (voicemeeterLib.VBVMR_GetParameterFloat(parameter, value) !== 0)
             throw "GetParameterFloat failed";
