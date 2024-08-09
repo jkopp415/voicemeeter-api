@@ -106,10 +106,10 @@ export const VoicemeeterDefaultConfig = {
 }
 
 export const VoicemeeterType = {
-    unknown: 0,
-    voicemeeter: 1,
-    voicemeeterBanana: 2,
-    voicemeeterPotato: 3
+    UNKNOWN: 0,
+    VOICEMEETER: 1,
+    BANANA: 2,
+    POTATO: 3
 }
 
 export const ButtonState = {
