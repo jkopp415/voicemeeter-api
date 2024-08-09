@@ -66,25 +66,23 @@ export const voicemeeterLib = {
     },
 
     getVoicemeeterType() {
-
         const voicemeeterType = [0];
         if (voicemeeterDll.VBVMR_GetVoicemeeterType(voicemeeterType) !== 0)
             throw "GetVoicemeeterType failed";
 
         switch(voicemeeterType[0]) {
             case 1:
-                return VoicemeeterType.voicemeeter;
+                return VoicemeeterType.VOICEMEETER;
             case 2:
-                return VoicemeeterType.voicemeeterBanana;
+                return VoicemeeterType.BANANA;
             case 3:
-                return VoicemeeterType.voicemeeterPotato;
+                return VoicemeeterType.POTATO;
             default:
-                return VoicemeeterType.unknown;
+                return VoicemeeterType.UNKNOWN;
         }
     },
 
     getVoicemeeterVersion() {
-
         const voicemeeterVersion = [0];
         if (voicemeeterDll.VBVMR_GetVoicemeeterVersion(voicemeeterVersion) !== 0)
             throw "GetVoicemeeterVersion failed";
@@ -101,25 +99,7 @@ export const voicemeeterLib = {
         return voicemeeterDll.VBVMR_IsParametersDirty();
     },
 
-    // getParameterFloat(panelType, panelNum, buttonName) {
-    //
-    //     const parameter = `${panelType}[${panelNum}].${buttonName}`;
-    //     let value = [0];
-    //     if (voicemeeterDll.VBVMR_GetParameterFloat(parameter, value) !== 0)
-    //         throw "GetParameterFloat failed";
-    //
-    //     return value[0];
-    // },
-    //
-    // setParameterFloat(panelType, panelNum, buttonName, buttonState) {
-    //
-    //     const parameter = `${panelType}[${panelNum}].${buttonName}`;
-    //     if (voicemeeterDll.VBVMR_SetParameterFloat(parameter, buttonState) !== 0)
-    //         throw "SetParameterFloat failed";
-    // },
-
     getParameterFloat(parameter) {
-
         let value = [0];
         if (voicemeeterDll.VBVMR_GetParameterFloat(parameter, value) !== 0)
             throw "GetParameterFloat failed";
@@ -127,7 +107,6 @@ export const voicemeeterLib = {
     },
 
     setParameterFloat(parameter, value) {
-
         if (voicemeeterDll.VBVMR_SetParameterFloat(parameter, value) !== 0)
             throw "SetParameterFloat failed";
     },
