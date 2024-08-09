@@ -1,5 +1,31 @@
 import { voicemeeterLib } from "./index.js";
-import { VoicemeeterDefaultConfig } from "./enums.js";
+import {VoicemeeterDefaultConfig, VoicemeeterType} from "./enums.js";
+
+const createParameterHandler = (param, valueRange, minVersion, extraCheck = {}) => {
+    return {
+
+        get() {
+            if (voicemeeter.type < minVersion)
+                throw Error('Your version of Voicemeeter does not support this command.');
+
+            extraCheck();
+
+            return voicemeeterLib.getParameterFloat(param);
+        },
+
+        set(value) {
+            if (voicemeeter.type < minVersion)
+                throw Error('Your version of Voicemeeter does not support this command.');
+
+            if (value < valueRange[0] || value > valueRange[1])
+                throw Error('The given value falls outside of the acceptable range for this command.');
+
+            extraCheck();
+
+            return voicemeeterLib.setParameterFloat(param, value);
+        }
+    }
+}
 
 export const voicemeeter = {
 
@@ -18,7 +44,6 @@ export const voicemeeter = {
     },
 
     login() {
-
         if (!this.isInitialized)
             throw "Wait for initialization before logging in";
 
@@ -34,7 +59,6 @@ export const voicemeeter = {
     },
 
     logout() {
-
         if (!this.isConnected)
             throw "Not connected";
 
@@ -64,20 +88,45 @@ export const voicemeeter = {
 
         return {
 
-            get Mono() { return voicemeeterLib.getParameterFloat(`Strip[${idx}].Mono`); },
-            set Mono(value) { voicemeeterLib.setParameterFloat(`Strip[${idx}].Mono`, value); },
+            Mono: createParameterHandler(`Strip[${idx}].Mono`, [0, 1], VoicemeeterType.VOICEMEETER),
 
-            get Mute() { return voicemeeterLib.getParameterFloat(`Strip[${idx}].Mute`); },
-            set Mute(value) { voicemeeterLib.setParameterFloat(`Strip[${idx}].Mute`, value); },
+            Mute: createParameterHandler(`Strip[${idx}].Mute`, [0, 1], VoicemeeterType.VOICEMEETER),
 
-            get Solo() { return voicemeeterLib.getParameterFloat(`Strip[${idx}].Solo`); },
-            set Solo(value) { voicemeeterLib.setParameterFloat(`Strip[${idx}].Solo`, value); },
+            Solo: createParameterHandler(`Strip[${idx}].Solo`, [0, 1], VoicemeeterType.VOICEMEETER),
 
-            get MC() { return voicemeeterLib.getParameterFloat(`Strip[${idx}].MC`); },
-            set MC(value) { voicemeeterLib.setParameterFloat(`Strip[${idx}].MC`, value); },
+            MC: createParameterHandler(`Strip[${idx}].MC`, [0, 1], VoicemeeterType.VOICEMEETER),
 
-            get Gain() { return voicemeeterLib.getParameterFloat(`Strip[${idx}].Gain`); },
-            set Gain(value) { voicemeeterLib.setParameterFloat(`Strip[${idx}].Gain`, value); }
+            Gain: createParameterHandler(`Strip[${idx}].Gain`, [-60, 12], VoicemeeterType.VOICEMEETER),
+
+            GainLayer(jdx) {
+                return createParameterHandler(`Strip[${idx}].GainLayer[${jdx}]`, [-60, 12], VoicemeeterType.POTATO);
+            },
+
+            Pan_x: createParameterHandler(`Strip[${idx}].Pan_x`, [-0.5, 0.5], VoicemeeterType.VOICEMEETER),
+
+            Pan_y: createParameterHandler(`Strip[${idx}].Pan_y`, [-0.5, 0.5], VoicemeeterType.VOICEMEETER),
+
+            // TODO: Add check that colors & fx are on physical strips only
+            Color_x: createParameterHandler(`Strip[${idx}].Color_x`, [-0.5, 0.5], VoicemeeterType.VOICEMEETER),
+
+            Color_y: createParameterHandler(`Strip[${idx}].Color_y`, [0.0, 1.0], VoicemeeterType.VOICEMEETER),
+
+            fx_x: createParameterHandler(`Strip[${idx}].fx_x`, [-0.5, 0.5], VoicemeeterType.BANANA),
+
+            fx_y: createParameterHandler(`Strip[${idx}].fx_y`, [0.0, 1.0], VoicemeeterType.BANANA),
+
+            Audibility: createParameterHandler(`Strip[${idx}].Audibility`, [0.0, 10.0], VoicemeeterType.VOICEMEETER, () => {
+                if (voicemeeter.type !== VoicemeeterType.VOICEMEETER)
+                    throw Error("This command only works on Voicemeeter 1.");
+            }),
+
+            // TODO: how do i do this?
+            Comp: {
+                // return createParameterHandler(`Strip[${idx}].Comp`, [0.0, 10.0], VoicemeeterType.BANANA),
+                this: createParameterHandler(`Strip[${idx}].Comp`, [0.0, 10.0], VoicemeeterType.BANANA),
+
+                GainIn: createParameterHandler(`Strip[${idx}].Comp.GainIn`, [-24.0, 24.0], VoicemeeterType.POTATO),
+            },
 
         }
 
