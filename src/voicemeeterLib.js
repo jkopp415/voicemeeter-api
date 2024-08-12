@@ -2,7 +2,7 @@ import { dirname, join } from 'path';
 import Registry from 'winreg';
 import koffi from 'koffi'
 
-import { VoicemeeterType } from './enums.js';
+import { VM_Version } from './voicemeeterEnums.js';
 
 // TODO: Add better error handling for function failures
 
@@ -72,13 +72,13 @@ export const voicemeeterLib = {
 
         switch(voicemeeterType[0]) {
             case 1:
-                return VoicemeeterType.VOICEMEETER;
+                return VM_Version.VOICEMEETER;
             case 2:
-                return VoicemeeterType.BANANA;
+                return VM_Version.BANANA;
             case 3:
-                return VoicemeeterType.POTATO;
+                return VM_Version.POTATO;
             default:
-                return VoicemeeterType.UNKNOWN;
+                return VM_Version.UNKNOWN;
         }
     },
 
