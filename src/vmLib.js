@@ -2,7 +2,7 @@ import { dirname, join } from 'path';
 import Registry from 'winreg';
 import koffi from 'koffi'
 
-import { VM_Version } from './voicemeeterEnums.js';
+import { VM_Version } from './vmEnums.js';
 
 // TODO: Add better error handling for function failures
 

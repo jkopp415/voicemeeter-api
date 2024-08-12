@@ -87,7 +87,7 @@ export const VoicemeeterDefaultConfig = {
     }
 }
 
-export const VM_ParamType = {
+export const VM_ParameterType = {
     FLOAT: 0,
     STRING: 1,
 }
@@ -111,14 +111,14 @@ export const VM_Version = {
     POTATO: 3
 }
 
-export const VM_Param = {
+export const VM_Parameter = {
 
     Strip(idx) {
         return {
 
             Mono: {
                 paramName: `Strip[${idx}].Mono`,
-                paramType: VM_ParamType.FLOAT,
+                paramType: VM_ParameterType.FLOAT,
                 valueRange: [0, 1],
                 accessType: VM_AcessType.READ_WRITE,
                 minVersion: VM_Version.VOICEMEETER,
@@ -127,7 +127,7 @@ export const VM_Param = {
 
             Mute: {
                 paramName: `Strip[${idx}].Mute`,
-                paramType: VM_ParamType.FLOAT,
+                paramType: VM_ParameterType.FLOAT,
                 valueRange: [0, 1],
                 accessType: VM_AcessType.READ_WRITE,
                 minVersion: VM_Version.VOICEMEETER,
@@ -136,7 +136,7 @@ export const VM_Param = {
 
             Solo: {
                 paramName: `Strip[${idx}].Solo`,
-                paramType: VM_ParamType.FLOAT,
+                paramType: VM_ParameterType.FLOAT,
                 valueRange: [0, 1],
                 accessType: VM_AcessType.READ_WRITE,
                 minVersion: VM_Version.VOICEMEETER,
@@ -145,14 +145,14 @@ export const VM_Param = {
 
             MC: {
                 paramName: `Strip[${idx}].MC`,
-                paramType: VM_ParamType.FLOAT,
+                paramType: VM_ParameterType.FLOAT,
                 valueRange: [0, 1],
                 minVersion: VM_Version.VOICEMEETER
             },
 
             Gain: {
                 paramName: `Strip[${idx}].Gain`,
-                paramType: VM_ParamType.FLOAT,
+                paramType: VM_ParameterType.FLOAT,
                 valueRange: [-60, 12],
                 minVersion: VM_Version.VOICEMEETER
             },
@@ -160,7 +160,7 @@ export const VM_Param = {
             GainLayer(jdx) {
                 return {
                     paramName: `Strip[${idx}].GainLayer[${jdx}]`,
-                    paramType: VM_ParamType.FLOAT,
+                    paramType: VM_ParameterType.FLOAT,
                     valueRange: [-60.0, 12.0],
                     minVersion: VM_Version.POTATO
                 }
@@ -168,14 +168,14 @@ export const VM_Param = {
 
             Comp: {
                 paramName: `Strip[${idx}].Comp`,
-                paramType: VM_ParamType.FLOAT,
+                paramType: VM_ParameterType.FLOAT,
                 valueRange: [0.0, 10.0],
                 minVersion: VM_Version.BANANA
             },
 
             Comp_GainIn: {
                 paramName: `Strip[${idx}].Comp.GainIn`,
-                paramType: VM_ParamType.FLOAT,
+                paramType: VM_ParameterType.FLOAT,
                 valueRange: [-24.0, 24.0],
                 minVersion: VM_Version.POTATO
             }
