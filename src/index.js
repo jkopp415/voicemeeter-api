@@ -39,7 +39,20 @@ export function logout() {
     isConnected = false;
 }
 
-export function isParametersDirty() {
+function getType() {
+    switch (type) {
+        case 1: return 'Voicemeeter';
+        case 2: return 'Voicemeeter Banana'; 
+        case 3: return 'Voicemeeter Potato';
+        default: return 'Unknown Voicemeeter Type'
+    }
+}
+
+function getVersion() {
+    return version;
+}
+
+function isParametersDirty() {
     return voicemeeterLib.isParametersDirty();
 }
 
