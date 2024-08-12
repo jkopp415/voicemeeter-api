@@ -1,19 +1,21 @@
 {
-  "name": "voicemeeter-api",
+  "name": "voicemeeter-api-js",
   "version": "0.1",
   "description": "A Node.js wrapper for the Voicemeeter Remote API.",
-  "main": "index.js",
-  "keywords": [],
   "author": "jkopp415",
   "license": "MIT",
   "type": "module",
+  "main": "src/index.js",
+  "types": "src/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/jkopp415/voicemeeter-api.git"
   },
   "dependencies": {
-    "express": "^4.19.2",
     "koffi": "^2.9.0",
     "winreg": "^1.2.5"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4"
   }
 }
