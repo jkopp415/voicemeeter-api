@@ -1,5 +1,3 @@
-import { VM_Parameter } from './vmEnums.d.ts';
-
 /**
  * THE INIT FUNCTION
  */
@@ -40,4 +38,5 @@ export function getParameter(parameter: VM_Parameter): number;
  */
 export function setParameter(parameter: VM_Parameter, value: any): void;
 
-export * from './vmEnums.d.ts';
+
+export { VM_Parameters } from './vmEnums';
