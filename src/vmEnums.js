@@ -92,7 +92,7 @@ export const VM_ParameterType = {
     STRING: 1,
 }
 
-export const VM_AcessType = {
+export const VM_AccessType = {
     READ_WRITE: 0,
     READ_ONLY: 1,
     WRITE_ONLY: 2
@@ -100,7 +100,7 @@ export const VM_AcessType = {
 
 export const VM_InterfaceType = {
     BOTH: 0,
-    PHYSICAL_ONlY: 1,
+    PHYSICAL_ONLY: 1,
     VIRTUAL_ONLY: 2
 }
 
@@ -111,81 +111,91 @@ export const VM_Version = {
     POTATO: 3
 }
 
-export const VM_Parameter = {
+export const VM_ButtonState = {
+    OFF: 0,
+    ON: 1
+}
+
+export const VM_Parameters = {
 
     Strip(idx) {
         return {
 
             Mono: {
-                paramName: `Strip[${idx}].Mono`,
-                paramType: VM_ParameterType.FLOAT,
+                name: `Strip[${idx}].Mono`,
+                type: VM_ParameterType.FLOAT,
                 valueRange: [0, 1],
-                accessType: VM_AcessType.READ_WRITE,
+                access: VM_AccessType.READ_WRITE,
                 minVersion: VM_Version.VOICEMEETER,
                 maxVersion: null
             },
 
             Mute: {
-                paramName: `Strip[${idx}].Mute`,
-                paramType: VM_ParameterType.FLOAT,
+                name: `Strip[${idx}].Mute`,
+                type: VM_ParameterType.FLOAT,
                 valueRange: [0, 1],
-                accessType: VM_AcessType.READ_WRITE,
+                access: VM_AccessType.READ_WRITE,
                 minVersion: VM_Version.VOICEMEETER,
                 maxVersion: null
             },
 
             Solo: {
-                paramName: `Strip[${idx}].Solo`,
-                paramType: VM_ParameterType.FLOAT,
+                name: `Strip[${idx}].Solo`,
+                type: VM_ParameterType.FLOAT,
                 valueRange: [0, 1],
-                accessType: VM_AcessType.READ_WRITE,
+                access: VM_AccessType.READ_WRITE,
                 minVersion: VM_Version.VOICEMEETER,
                 maxVersion: null
             },
 
             MC: {
-                paramName: `Strip[${idx}].MC`,
-                paramType: VM_ParameterType.FLOAT,
+                name: `Strip[${idx}].MC`,
+                type: VM_ParameterType.FLOAT,
                 valueRange: [0, 1],
-                minVersion: VM_Version.VOICEMEETER
+                access: VM_AccessType.READ_WRITE,
+                minVersion: VM_Version.VOICEMEETER,
+                maxVersion: null
             },
 
             Gain: {
-                paramName: `Strip[${idx}].Gain`,
-                paramType: VM_ParameterType.FLOAT,
+                name: `Strip[${idx}].Gain`,
+                type: VM_ParameterType.FLOAT,
                 valueRange: [-60, 12],
-                minVersion: VM_Version.VOICEMEETER
+                access: VM_AccessType.READ_WRITE,
+                minVersion: VM_Version.VOICEMEETER,
+                maxVersion: null
             },
 
             GainLayer(jdx) {
                 return {
-                    paramName: `Strip[${idx}].GainLayer[${jdx}]`,
-                    paramType: VM_ParameterType.FLOAT,
+                    name: `Strip[${idx}].GainLayer[${jdx}]`,
+                    type: VM_ParameterType.FLOAT,
                     valueRange: [-60.0, 12.0],
-                    minVersion: VM_Version.POTATO
+                    access: VM_AccessType.READ_WRITE,
+                    minVersion: VM_Version.POTATO,
+                    maxVersion: null
                 }
             },
 
             Comp: {
-                paramName: `Strip[${idx}].Comp`,
-                paramType: VM_ParameterType.FLOAT,
+                name: `Strip[${idx}].Comp`,
+                type: VM_ParameterType.FLOAT,
                 valueRange: [0.0, 10.0],
-                minVersion: VM_Version.BANANA
+                access: VM_AccessType.READ_WRITE,
+                minVersion: VM_Version.BANANA,
+                maxVersion: null
             },
 
             Comp_GainIn: {
-                paramName: `Strip[${idx}].Comp.GainIn`,
-                paramType: VM_ParameterType.FLOAT,
+                name: `Strip[${idx}].Comp.GainIn`,
+                type: VM_ParameterType.FLOAT,
                 valueRange: [-24.0, 24.0],
-                minVersion: VM_Version.POTATO
+                access: VM_AccessType.READ_WRITE,
+                minVersion: VM_Version.POTATO,
+                maxVersion: null
             }
 
         }
     }
 
-}
-
-export const VM_ButtonState = {
-    OFF: 0,
-    ON: 1
 }

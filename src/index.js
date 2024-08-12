@@ -1,21 +1,21 @@
-import { voicemeeterLib } from "./voicemeeterLib.js";
-import { VoicemeeterDefaultConfig, VM_AcessType, VM_ParamType } from "./voicemeeterEnums.js";
-import { VMJS_AccessError, VMJS_InputError, VMJS_VersionError } from './voicemeeterErrors.js';
+import { voicemeeterLib } from "./vmLib.js";
+import { VoicemeeterDefaultConfig, VM_AccessType, VM_ParameterType } from "./vmEnums.js";
+import { VMJS_AccessError, VMJS_InputError, VMJS_VersionError } from './vmErrors.js';
 
 let isInitialized = false;
 let isConnected = false;
-let outputDevices = false;
-let inputDevices = false;
+// let outputDevices = false;
+// let inputDevices = false;
 let type = 0;
 let version = null;
 let voicemeeterConfig = null;
 
-export async function init() {
+async function init() {
     await voicemeeterLib.init();
     isInitialized = true;
 }
 
-export function login() {
+function login() {
     if (!isInitialized)
         throw "Wait for initialization before logging in";
 
@@ -30,7 +30,7 @@ export function login() {
     isConnected = true;
 }
 
-export function logout() {
+function logout() {
     if (!isConnected)
         throw "Not connected";
 
@@ -56,8 +56,8 @@ function isParametersDirty() {
     return voicemeeterLib.isParametersDirty();
 }
 
-export function getParameter(parameter) {
-    if (parameter.accessType === VM_AcessType.WRITE_ONLY)
+function getParameter(parameter) {
+    if (parameter.access === VM_AccessType.WRITE_ONLY)
         throw new VMJS_AccessError('The given parameter is write-only.');
 
     if (this.version < parameter.minVersion)
@@ -66,15 +66,15 @@ export function getParameter(parameter) {
     if (parameter.maxVersion != null && version > parameter.maxVersion)
         throw new VMJS_VersionError('The given parameter does not work on the current version of Voicemeeter.');
 
-    if (parameter.paramType === VM_ParamType.FLOAT)
-        return voicemeeterLib.getParameterFloat(parameter.paramName);
-    else if (parameter.paramType === VM_ParamType.STRING) {
+    if (parameter.type === VM_ParameterType.FLOAT)
+        return voicemeeterLib.getParameterFloat(parameter.name);
+    else if (parameter.type === VM_ParameterType.STRING) {
         // TODO: Implement this
     }
 }
 
-export function setParameter(parameter, value) {
-    if (parameter.accessType === VM_AcessType.READ_ONLY)
+function setParameter(parameter, value) {
+    if (parameter.access === VM_AccessType.READ_ONLY)
         throw new VMJS_AccessError('The given parameter is read-only.');
 
     if (this.version < parameter.minVersion)
@@ -83,17 +83,27 @@ export function setParameter(parameter, value) {
     if (parameter.maxVersion != null && version > parameter.maxVersion)
         throw new VMJS_VersionError('The given parameter does not work on the current version of Voicemeeter.');
 
-    if (parameter.paramType === VM_ParamType.FLOAT) {
+    if (parameter.type === VM_ParameterType.FLOAT) {
 
         if (value < parameter.valueRange[0] || value > parameter.valueRange[1])
             throw new VMJS_InputError('The given value falls outside the acceptable range for this parameter.');
 
-        voicemeeterLib.setParameterFloat(parameter.paramName, value);
+        voicemeeterLib.setParameterFloat(parameter.name, value);
 
-    } else if (parameter.paramType === VM_ParamType.STRING) {
+    } else if (parameter.type === VM_ParameterType.STRING) {
         // TODO: Implement this
     }
 }
 
-// export default Voicemeeter;
-export { VM_Param } from './voicemeeterEnums.js';
+export default {
+    init,
+    login,
+    logout,
+    getType,
+    getVersion,
+    isParametersDirty,
+    getParameter,
+    setParameter
+};
+
+export { VM_Parameters } from './vmEnums.js';
